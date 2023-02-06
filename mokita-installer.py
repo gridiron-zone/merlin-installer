@@ -14,7 +14,7 @@ os.remove(sys.argv[0])
 class NetworkVersion(str, Enum):
     MAINNET = ""
     TESTNET = "v0.1.0-merlin.test.1"
-    LOCALOSMOSIS = "v0.3.x"
+    LOCALMERLIN = "v0.3.x"
 
 repo = "https://github.com/gridiron-zone/merlin"
 version = NetworkVersion.MAINNET
@@ -22,12 +22,12 @@ version = NetworkVersion.MAINNET
 class NetworkType(str, Enum):
     MAINNET = "1"
     TESTNET = "2"
-    LOCALOSMOSIS = "3"
+    LOCALMERLIN = "3"
 
 class NodeType(str, Enum):
     FULL = "1"
     CLIENT = "2"
-    LOCALOSMOSIS = "3"
+    LOCALMERLIN = "3"
 
 class CustomHelpFormatter(argparse.HelpFormatter):
     def _format_action_invocation(self, action):
@@ -260,23 +260,23 @@ def completeCosmovisor():
 
 def completeMerlind():
     print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Merlin full node!")
-    print(bcolors.OKGREEN + "The merlind service is currently running in the background")
-    print(bcolors.OKGREEN + "To see the status of the merlin daemon, run the following command: 'sudo systemctl status merlind'")
-    print(bcolors.OKGREEN + "To see the live logs from the merlin daemon, run the following command: 'journalctl -u merlind -f'" + bcolors.ENDC)
+    print(bcolors.OKGREEN + "The merd service is currently running in the background")
+    print(bcolors.OKGREEN + "To see the status of the merlin daemon, run the following command: 'sudo systemctl status merd'")
+    print(bcolors.OKGREEN + "To see the live logs from the merlin daemon, run the following command: 'journalctl -u merd -f'" + bcolors.ENDC)
     quit()
 
 
 def complete():
     print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Merlin full node!")
-    print(bcolors.OKGREEN + "The merlind service is NOT running in the background")
-    print(bcolors.OKGREEN + "You can start merlind with the following command: 'merlind start'"+ bcolors.ENDC)
+    print(bcolors.OKGREEN + "The merd service is NOT running in the background")
+    print(bcolors.OKGREEN + "You can start merd with the following command: 'merd start'"+ bcolors.ENDC)
     quit()
 
 
 def partComplete():
     print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up the Merlin daemon!")
-    print(bcolors.OKGREEN + "The merlind service is NOT running in the background, and your data directory is empty")
-    print(bcolors.OKGREEN + "If you intend to use merlind without syncing, you must include the '--node' flag after cli commands with the address of a public RPC node"+ bcolors.ENDC)
+    print(bcolors.OKGREEN + "The merd service is NOT running in the background, and your data directory is empty")
+    print(bcolors.OKGREEN + "If you intend to use merd without syncing, you must include the '--node' flag after cli commands with the address of a public RPC node"+ bcolors.ENDC)
     quit()
 
 
@@ -298,7 +298,7 @@ def replayDelay():
     print(bcolors.OKGREEN + "YOU MUST MANUALLY INCREASE ULIMIT FILE SIZE BEFORE STARTING WITH `ulimit -n 200000`")
     print(bcolors.OKGREEN + "Use the command `cosmovisor start` to start the replay from genesis process")
     print(bcolors.OKGREEN + "It is recommended to run this in a tmux session if not running as a background service")
-    print(bcolors.OKGREEN + "You must use `cosmovisor start` and not `merlind start` in order to upgrade automatically"+ bcolors.ENDC)
+    print(bcolors.OKGREEN + "You must use `cosmovisor start` and not `merd start` in order to upgrade automatically"+ bcolors.ENDC)
     quit()
 
 
@@ -309,7 +309,7 @@ def localMerlinComplete():
     print(bcolors.OKGREEN + "Run 'cd $HOME/merlin'")
     print(bcolors.OKGREEN + "First, you MUST clean your env, run 'make localnet-clean' and select 'yes'")
     print(bcolors.OKGREEN + "To start the node, run 'make localnet-start'")
-    print(bcolors.OKGREEN + "Run 'merlind status' to check that you are now creating blocks")
+    print(bcolors.OKGREEN + "Run 'merd status' to check that you are now creating blocks")
     print(bcolors.OKGREEN + "To stop the node and retain data, run 'make localnet-stop'")
     print(bcolors.OKGREEN + "To stop the node and remove data, run 'make localnet-remove'")
     print(bcolors.OKGREEN + "To run LocalMerlin on a different version, git checkout the desired branch, run 'make localnet-build', then follow the above instructions")
@@ -320,7 +320,7 @@ def localMerlinComplete():
 def cosmovisorService ():
     print(bcolors.OKGREEN + "Creating Cosmovisor Service" + bcolors.ENDC)
     subprocess.run(["echo '# Setup Cosmovisor' >> "+HOME+"/.profile"], shell=True, env=my_env)
-    subprocess.run(["echo 'export DAEMON_NAME=merlind' >> "+HOME+"/.profile"], shell=True, env=my_env)
+    subprocess.run(["echo 'export DAEMON_NAME=merd' >> "+HOME+"/.profile"], shell=True, env=my_env)
     subprocess.run(["echo 'export DAEMON_HOME="+mer_home+"' >> "+HOME+"/.profile"], shell=True, env=my_env)
     subprocess.run(["echo 'export DAEMON_ALLOW_DOWNLOAD_BINARIES=false' >> "+HOME+"/.profile"], shell=True, env=my_env)
     subprocess.run(["echo 'export DAEMON_LOG_BUFFER_SIZE=512' >> "+HOME+"/.profile"], shell=True, env=my_env)
@@ -330,7 +330,7 @@ def cosmovisorService ():
 Description=Cosmovisor daemon
 After=network-online.target
 [Service]
-Environment=\"DAEMON_NAME=merlind\"
+Environment=\"DAEMON_NAME=merd\"
 Environment=\"DAEMON_HOME="""+ mer_home+"""\"
 Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\"
 Environment=\"DAEMON_ALLOW_DOWNLOAD_BINARIES=false\"
@@ -352,28 +352,28 @@ WantedBy=multi-user.target
     subprocess.run(["clear"], shell=True)
 
 
-def merlindService ():
+def merdService ():
     print(bcolors.OKGREEN + "Creating Merlind Service..." + bcolors.ENDC)
     subprocess.run(["""echo '[Unit]
 Description=Merlin Daemon
 After=network-online.target
 [Service]
 User="""+ USER+"""
-ExecStart="""+HOME+"""/go/bin/merlind start --home """+mer_home+"""
+ExecStart="""+HOME+"""/go/bin/merd start --home """+mer_home+"""
 Restart=always
 RestartSec=3
 LimitNOFILE=infinity
 LimitNPROC=infinity
 Environment=\"DAEMON_HOME="""+mer_home+"""\"
-Environment=\"DAEMON_NAME=merlind\"
+Environment=\"DAEMON_NAME=merd\"
 Environment=\"DAEMON_ALLOW_DOWNLOAD_BINARIES=false\"
 Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\"
 Environment=\"DAEMON_LOG_BUFFER_SIZE=512\"
 [Install]
 WantedBy=multi-user.target
-' >merlind.service
+' >merd.service
     """], shell=True, env=my_env)
-    subprocess.run(["sudo mv merlind.service /lib/systemd/system/merlind.service"], shell=True, env=my_env)
+    subprocess.run(["sudo mv merd.service /lib/systemd/system/merd.service"], shell=True, env=my_env)
     subprocess.run(["sudo systemctl daemon-reload"], shell=True, env=my_env)
     subprocess.run(["systemctl restart systemd-journald"], shell=True, env=my_env)
 
@@ -381,7 +381,7 @@ WantedBy=multi-user.target
 def cosmovisorInit ():
     print(bcolors.OKGREEN + """Do you want to use Cosmovisor to automate future upgrades?
 1) Yes, install cosmovisor and set up background service
-2) No, just set up an merlind background service (recommended)
+2) No, just set up an merd background service (recommended)
 3) Don't install cosmovisor and don't set up a background service
     """+ bcolors.ENDC)
     if args.cosmovisorService == "cosmoservice" :
@@ -406,15 +406,15 @@ def cosmovisorInit ():
         os.chdir(os.path.expanduser(HOME+"/merlin"))
         subprocess.run(["git checkout {v}".format(v=NetworkVersion.MAINNET)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["cp "+ GOPATH +"/bin/merlind "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
+        subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["cp "+ GOPATH +"/bin/merd "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
         cosmovisorService()
         subprocess.run(["sudo systemctl start cosmovisor"], shell=True, env=my_env)
         subprocess.run(["clear"], shell=True)
         completeCosmovisor()
     elif useCosmovisor == "2":
-        merlindService()
-        subprocess.run(["sudo systemctl start merlind"], shell=True, env=my_env)
+        merdService()
+        subprocess.run(["sudo systemctl start merd"], shell=True, env=my_env)
         subprocess.run(["clear"], shell=True)
         completeMerlind()
     elif useCosmovisor == "3":
@@ -444,7 +444,7 @@ def startReplayNow():
         replayComplete()
     if startNow == "2":
         subprocess.run(["echo '# Setup Cosmovisor' >> "+HOME+"/.profile"], shell=True, env=my_env)
-        subprocess.run(["echo 'export DAEMON_NAME=merlind' >> "+HOME+"/.profile"], shell=True, env=my_env)
+        subprocess.run(["echo 'export DAEMON_NAME=merd' >> "+HOME+"/.profile"], shell=True, env=my_env)
         subprocess.run(["echo 'export DAEMON_HOME="+mer_home+"' >> "+HOME+"/.profile"], shell=True, env=my_env)
         subprocess.run(["echo 'export DAEMON_ALLOW_DOWNLOAD_BINARIES=false' >> "+HOME+"/.profile"], shell=True, env=my_env)
         subprocess.run(["echo 'export DAEMON_LOG_BUFFER_SIZE=512' >> "+HOME+"/.profile"], shell=True, env=my_env)
@@ -474,26 +474,26 @@ def replayFromGenesisLevelDb ():
     print(bcolors.OKGREEN + "Preparing v4 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v4.2.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v5/v6 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v6.4.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v7/v8 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v8.0.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v9/v10 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v10.0.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v11 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout {v}".format(v=NetworkVersion.MAINNET)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git checkout v3.1.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make install"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp "+ GOPATH +"/bin/merlind "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
+    subprocess.run(["cp "+ GOPATH +"/bin/merd "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
     print(bcolors.OKGREEN + "Adding Persistent Peers For Replay..." + bcolors.ENDC)
     peers = "b5ace00790c9cc7990370d7a117ef2a29f19b961@65.109.20.216:26656,2dd86ed01eae5673df4452ce5b0dddb549f46a38@34.66.52.160:26656,2dd86ed01eae5673df4452ce5b0dddb549f46a38@34.82.89.95:26656"
     subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
@@ -537,24 +537,24 @@ def replayFromGenesisRocksDb ():
     subprocess.run(["echo 'replace github.com/tecbot/gorocksdb => github.com/cosmos/gorocksdb v1.2.0' >> ./go.mod"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["go mod tidy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v5/v6 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git stash"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git checkout v6.4.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v7/v8 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v8.0.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v9/v10 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v10.0.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v11 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout {v}".format(v=NetworkVersion.MAINNET)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git stash"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git checkout v3.1.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["sed '/gorocksdb.*/d' ./go.mod"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
@@ -563,7 +563,7 @@ def replayFromGenesisRocksDb ():
     subprocess.run(["echo 'replace github.com/tecbot/gorocksdb => github.com/cosmos/gorocksdb v1.2.0' >> ./go.mod"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["go mod tidy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/genesis/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merd "+mer_home+"/cosmovisor/genesis/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make install"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["sudo /sbin/ldconfig -v"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Adding Persistent Peers For Replay..." + bcolors.ENDC)
@@ -662,7 +662,7 @@ Would you like to overwrite any previous swap file and instead set a """+str(swa
 #     """+ bcolors.ENDC)
 #     stateSyncAns = input(bcolors.OKGREEN + 'Enter Choice: '+ bcolors.ENDC)
 #     if stateSyncAns == "1":
-#         subprocess.run(["merlind start"], shell=True, env=my_env)
+#         subprocess.run(["merd start"], shell=True, env=my_env)
 #         print(bcolors.OKGREEN + "Statesync finished. Installing required patches for state sync fix" + bcolors.ENDC)
 #         os.chdir(os.path.expanduser(HOME))
 #         subprocess.run(["git clone https://github.com/tendermint/tendermint"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
@@ -1007,13 +1007,13 @@ def setupLocalnet ():
 
 def setupMainnet ():
     print(bcolors.OKGREEN + "Initializing Merlin Node " + nodeName + bcolors.ENDC)
-    #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    #subprocess.run(["merd unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["rm "+mer_home+"/config/app.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["rm "+mer_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["rm "+mer_home+"/config/addrbook.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["merlind init " + nodeName + " --chain-id=mer-1 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL ,shell=True, env=my_env)
+    subprocess.run(["merd init " + nodeName + " --chain-id=mer-1 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL ,shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading and Replacing Genesis..." + bcolors.ENDC)
-    subprocess.run(["wget -O "+mer_home+"/config/genesis.json https://github.com/osmosis-labs/networks/raw/main/merlin-1/genesis.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["wget -O "+mer_home+"/config/genesis.json https://github.com/osmosis-labs/networks/raw/main/osmosis-1/genesis.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading and Replacing Addressbook..." + bcolors.ENDC)
     subprocess.run(["wget -O "+mer_home+"/config/addrbook.json https://quicksync.io/addrbook.merlin.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["clear"], shell=True)
@@ -1022,13 +1022,13 @@ def setupMainnet ():
 
 def setupTestnet ():
     print(bcolors.OKGREEN + "Initializing Merlin Node " + nodeName + bcolors.ENDC)
-    #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    #subprocess.run(["merd unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["rm "+mer_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["rm "+mer_home+"/config/app.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["rm "+mer_home+"/config/addrbook.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["merlind init " + nodeName + " --chain-id=mer-test-4 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["merd init " + nodeName + " --chain-id=mer-test-4 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading and Replacing Genesis..." + bcolors.ENDC)
-    subprocess.run(["wget -O "+mer_home+"/config/genesis.tar.bz2 wget https://github.com/osmosis-labs/networks/raw/main/mer-test-4/genesis.tar.bz2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["wget -O "+mer_home+"/config/genesis.tar.bz2 wget https://github.com/osmosis-labs/networks/raw/main/osmo-test-4/genesis.tar.bz2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Finding and Replacing Seeds..." + bcolors.ENDC)
     peers = "4ab030b7fd75ed895c48bcc899b99c17a396736b@137.184.190.127:26656,3dbffa30baab16cc8597df02945dcee0aa0a4581@143.198.139.33:26656"
     subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
@@ -1036,7 +1036,7 @@ def setupTestnet ():
     subprocess.run(["rm "+mer_home+"/config/genesis.tar.bz2"], shell=True)
     subprocess.run(["sed -i -E 's/seeds = \"21d7539792ee2e0d650b199bf742c56ae0cf499e@162.55.132.230:2000,295b417f995073d09ff4c6c141bd138a7f7b5922@65.21.141.212:2000,ec4d3571bf709ab78df61716e47b5ac03d077a1a@65.108.43.26:2000,4cb8e1e089bdf44741b32638591944dc15b7cce3@65.108.73.18:2000,f515a8599b40f0e84dfad935ba414674ab11a668@merlin.blockpane.com:26656,6bcdbcfd5d2c6ba58460f10dbcfde58278212833@merlin.artifact-staking.io:26656\"/seeds = \"0f9a9c694c46bd28ad9ad6126e923993fc6c56b1@137.184.181.105:26656\"/g' "+mer_home+"/config/config.toml"], shell=True)
     print(bcolors.OKGREEN + "Downloading and Replacing Addressbook..." + bcolors.ENDC)
-    subprocess.run(["wget -O "+mer_home+"/config/addrbook.json https://quicksync.io/addrbook.mertestnet.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["wget -O "+mer_home+"/config/addrbook.json https://quicksync.io/addrbook.osmotestnet.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["clear"], shell=True)
     customPortSelection()
 
@@ -1044,9 +1044,9 @@ def setupTestnet ():
 def clientSettings ():
     if networkType == NetworkType.MAINNET:
         print(bcolors.OKGREEN + "Initializing Merlin Client Node " + nodeName + bcolors.ENDC)
-        #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        #subprocess.run(["merd unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         subprocess.run(["rm "+mer_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["merlind init " + nodeName + " --chain-id=merlin-1 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["merd init " + nodeName + " --chain-id=merlin-1 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         print(bcolors.OKGREEN + "Changing Client Settings..." + bcolors.ENDC)
         subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"merlin-1\"/g' "+mer_home+"/config/client.toml"], shell=True)
         #subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"https://rpc-merlin.blockapsis.com:443\"|g' "+mer_home+"/config/client.toml"], shell=True)
@@ -1056,19 +1056,19 @@ def clientSettings ():
 
     elif networkType == NetworkType.TESTNET:
         print(bcolors.OKGREEN + "Initializing Merlin Client Node " + nodeName + bcolors.ENDC)
-        #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        #subprocess.run(["merd unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         subprocess.run(["rm "+mer_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["merlind init " + nodeName + " --chain-id=mer-test-4 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["merd init " + nodeName + " --chain-id=mer-test-4 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         print(bcolors.OKGREEN + "Changing Client Settings..." + bcolors.ENDC)
         subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"mer-test-4\"/g' "+mer_home+"/config/client.toml"], shell=True)
         subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"https://rpc.testnet.merlin.zone:443\"|g' "+mer_home+"/config/client.toml"], shell=True)
         subprocess.run(["clear"], shell=True)
         clientComplete()
 
-    elif networkType == NetworkType.LOCALOSMOSIS:
+    elif networkType == NetworkType.LOCALMERLIN:
         print(bcolors.OKGREEN + "Initializing LocalMerlin Node " + nodeName + bcolors.ENDC)
         subprocess.run(["rm "+mer_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["merlind init " + nodeName + " --chain-id=localmerlin -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["merd init " + nodeName + " --chain-id=localmerlin -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         print(bcolors.OKGREEN + "Changing Client Settings..." + bcolors.ENDC)
         subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"localmerlin\"/g' "+mer_home+"/config/client.toml"], shell=True)
         subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"tcp://127.0.0.1:26657\"|g' "+mer_home+"/config/client.toml"], shell=True)
@@ -1088,17 +1088,17 @@ def initNodeName ():
     if nodeName and networkType == NetworkType.MAINNET and node == NodeType.FULL:
         subprocess.run(["clear"], shell=True)
         subprocess.run(["rm -r "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm -r "+HOME+"/.merlind"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+HOME+"/.merd"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         setupMainnet()
     elif nodeName and networkType == NetworkType.TESTNET and node == NodeType.FULL:
         subprocess.run(["clear"], shell=True)
         subprocess.run(["rm -r "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm -r "+HOME+"/.merlind"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+HOME+"/.merd"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         setupTestnet()
-    elif nodeName and node == NodeType.CLIENT or node == NodeType.LOCALOSMOSIS:
+    elif nodeName and node == NodeType.CLIENT or node == NodeType.LOCALMERLIN:
         subprocess.run(["clear"], shell=True)
         subprocess.run(["rm -r "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm -r "+HOME+"/.merlind"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+HOME+"/.merd"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         clientSettings()
     else:
         subprocess.run(["clear"], shell=True)
@@ -1109,7 +1109,7 @@ def initNodeName ():
 def installLocationHandler ():
     global mer_home
     print(bcolors.OKGREEN + "Input desired installation location. Press enter for default location" + bcolors.ENDC)
-    location_def = subprocess.run(["echo $HOME/.merlind"], capture_output=True, shell=True, text=True).stdout.strip()
+    location_def = subprocess.run(["echo $HOME/.merd"], capture_output=True, shell=True, text=True).stdout.strip()
 
     if args.installHome:
         mer_home = args.installHome
@@ -1145,7 +1145,7 @@ def installLocation ():
 
     if locationChoice == "1":
         subprocess.run(["clear"], shell=True)
-        mer_home = subprocess.run(["echo $HOME/.merlind"], capture_output=True, shell=True, text=True).stdout.strip()
+        mer_home = subprocess.run(["echo $HOME/.merd"], capture_output=True, shell=True, text=True).stdout.strip()
         initNodeName()
     elif locationChoice == "2":
         subprocess.run(["clear"], shell=True)
@@ -1241,7 +1241,7 @@ def initSetup ():
         my_env["PATH"] = "/"+HOME+"/go/bin:/"+HOME+"/go/bin:/"+HOME+"/.go/bin:" + my_env["PATH"]
         subprocess.run(["make install"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
 
-        if node == NodeType.LOCALOSMOSIS:
+        if node == NodeType.LOCALMERLIN:
             subprocess.run(["clear"], shell=True)
             print(bcolors.OKGREEN + "Installing Docker..." + bcolors.ENDC)
             subprocess.run(["sudo apt-get remove docker docker-engine docker.io"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
@@ -1295,7 +1295,7 @@ def initSetup ():
         my_env["PATH"] = "/"+HOME+"/go/bin:/"+HOME+"/go/bin:/"+HOME+"/.go/bin:" + my_env["PATH"]
         subprocess.run(["make install"], shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=my_env)
 
-        if node == NodeType.LOCALOSMOSIS:
+        if node == NodeType.LOCALMERLIN:
             subprocess.run(["clear"], shell=True)
             print(bcolors.OKGREEN + "Installing Docker..." + bcolors.ENDC)
             subprocess.run(["brew install docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
@@ -1353,7 +1353,7 @@ def brachSelection ():
     global version
     global repo
     repo = "https://github.com/tessornetwork/merlin"
-    version = NetworkVersion.LOCALOSMOSIS.value
+    version = NetworkVersion.LOCALMERLIN.value
     print(bcolors.OKGREEN +"""
 Would you like to run LocalMerlin on the most recent release of Merlin: {v} ?
 1) Yes, use {v} (recommended)
@@ -1554,7 +1554,7 @@ Please choose a node type:
         elif args.nodeType == 'client':
             node = NodeType.CLIENT
         elif args.nodeType == 'local':
-            node = NodeType.LOCALOSMOSIS
+            node = NodeType.LOCALMERLIN
         else:
             node = input(bcolors.OKGREEN + 'Enter Choice: '+ bcolors.ENDC)
 
@@ -1564,8 +1564,8 @@ Please choose a node type:
         elif node == NodeType.CLIENT:
             subprocess.run(["clear"], shell=True)
             selectNetwork()
-        elif node == NodeType.LOCALOSMOSIS:
-            networkType = NetworkType.LOCALOSMOSIS
+        elif node == NodeType.LOCALMERLIN:
+            networkType = NetworkType.LOCALMERLIN
             subprocess.run(["clear"], shell=True)
             brachSelection()
         else:
