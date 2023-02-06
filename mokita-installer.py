@@ -12,11 +12,11 @@ from enum import Enum, auto
 os.remove(sys.argv[0])
 
 class NetworkVersion(str, Enum):
-    MAINNET = "v13.1.0"
-    TESTNET = "v14.0.0-rc1"
-    LOCALOSMOSIS = "v13.x"
+    MAINNET = ""
+    TESTNET = "v0.1.0-merlin.test.1"
+    LOCALOSMOSIS = "v0.3.x"
 
-repo = "https://github.com/tessornetwork/mokita"
+repo = "https://github.com/gridiron-zone/merlin"
 version = NetworkVersion.MAINNET
 
 class NetworkType(str, Enum):
@@ -42,9 +42,9 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 
 fmt = lambda prog: CustomHelpFormatter(prog,max_help_position=30)
 
-moki_home = subprocess.run(["echo $HOME/.mokitad"], capture_output=True, shell=True, text=True).stdout.strip()
+mer_home = subprocess.run(["echo $HOME/.merd"], capture_output=True, shell=True, text=True).stdout.strip()
 
-parser = argparse.ArgumentParser(description="Mokita Installer",formatter_class=fmt)
+parser = argparse.ArgumentParser(description="Merlin Installer",formatter_class=fmt)
 
 # automated commands ("auto" group)
 auto = parser.add_argument_group('Automated')
@@ -78,8 +78,8 @@ both.add_argument(
     '-i',
     '--install-home',
     type = str,
-    default=moki_home,
-    help='R|Mokita installation location \nDefault: "'+moki_home+'"\n ',
+    default=mer_home,
+    help='R|Merlin installation location \nDefault: "'+mer_home+'"\n ',
     dest="installHome")
 
 both.add_argument(
@@ -109,14 +109,14 @@ both.add_argument(
     help='R|Node type \nDefault: "full" '+str(nodeTypeChoices)+'\n ',
     dest="nodeType")
 
-networkChoices = ['mokita-1', 'moki-test-4']
+networkChoices = ['merlin-1', 'mer-test-1']
 both.add_argument(
     '-n',
     '--network',
     type = str,
     choices=networkChoices,
-    default='mokita-1',
-    help='R|Network to join \nDefault: "mokita-1" '+str(networkChoices)+'\n ',
+    default='merlin-1',
+    help='R|Network to join \nDefault: "merlin-1" '+str(networkChoices)+'\n ',
     dest="network")
 
 pruningChoices = ['default', 'nothing', 'everything']
@@ -129,14 +129,14 @@ both.add_argument(
     help='R|Pruning settings \nDefault: "everything" '+str(pruningChoices)+'\n ',
     dest="pruning")
 
-cosmovisorServiceChoices = ['cosmoservice', 'mokiservice', 'noservice']
+cosmovisorServiceChoices = ['cosmoservice', 'merservice', 'noservice']
 both.add_argument(
     '-cvs',
     '--cosmovisor-service',
     type = str,
     choices=cosmovisorServiceChoices,
-    default='mokiservice',
-    help='R|Start with cosmovisor systemctl service, mokitad systemctl service, or exit without creating or starting a service \nDefault: "mokiservice" '+str(cosmovisorServiceChoices),
+    default='merservice',
+    help='R|Start with cosmovisor systemctl service, merd systemctl service, or exit without creating or starting a service \nDefault: "merservice" '+str(cosmovisorServiceChoices),
     dest="cosmovisorService")
 
 # testnet only commands ("testnet" group)
@@ -229,7 +229,7 @@ if not len(sys.argv) > 1:
 args = parser.parse_args()
 
 if args.testnetDefault == True:
-    args.network = 'moki-test-4'
+    args.network = 'mer-test-4'
 
 class bcolors:
     HEADER = '\033[95m'
@@ -251,38 +251,38 @@ def rlinput(prompt, prefill=''):
 
 
 def completeCosmovisor():
-    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Mokita full node!")
+    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Merlin full node!")
     print(bcolors.OKGREEN + "The cosmovisor service is currently running in the background")
     print(bcolors.OKGREEN + "To see the status of cosmovisor, run the following command: 'sudo systemctl status cosmovisor'")
     print(bcolors.OKGREEN + "To see the live logs from cosmovisor, run the following command: 'journalctl -u cosmovisor -f'" + bcolors.ENDC)
     quit()
 
 
-def completeMokitad():
-    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Mokita full node!")
-    print(bcolors.OKGREEN + "The mokitad service is currently running in the background")
-    print(bcolors.OKGREEN + "To see the status of the mokita daemon, run the following command: 'sudo systemctl status mokitad'")
-    print(bcolors.OKGREEN + "To see the live logs from the mokita daemon, run the following command: 'journalctl -u mokitad -f'" + bcolors.ENDC)
+def completeMerlind():
+    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Merlin full node!")
+    print(bcolors.OKGREEN + "The merlind service is currently running in the background")
+    print(bcolors.OKGREEN + "To see the status of the merlin daemon, run the following command: 'sudo systemctl status merlind'")
+    print(bcolors.OKGREEN + "To see the live logs from the merlin daemon, run the following command: 'journalctl -u merlind -f'" + bcolors.ENDC)
     quit()
 
 
 def complete():
-    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Mokita full node!")
-    print(bcolors.OKGREEN + "The mokitad service is NOT running in the background")
-    print(bcolors.OKGREEN + "You can start mokitad with the following command: 'mokitad start'"+ bcolors.ENDC)
+    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Merlin full node!")
+    print(bcolors.OKGREEN + "The merlind service is NOT running in the background")
+    print(bcolors.OKGREEN + "You can start merlind with the following command: 'merlind start'"+ bcolors.ENDC)
     quit()
 
 
 def partComplete():
-    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up the Mokita daemon!")
-    print(bcolors.OKGREEN + "The mokitad service is NOT running in the background, and your data directory is empty")
-    print(bcolors.OKGREEN + "If you intend to use mokitad without syncing, you must include the '--node' flag after cli commands with the address of a public RPC node"+ bcolors.ENDC)
+    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up the Merlin daemon!")
+    print(bcolors.OKGREEN + "The merlind service is NOT running in the background, and your data directory is empty")
+    print(bcolors.OKGREEN + "If you intend to use merlind without syncing, you must include the '--node' flag after cli commands with the address of a public RPC node"+ bcolors.ENDC)
     quit()
 
 
 def clientComplete():
-    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Mokita client node!")
-    print(bcolors.OKGREEN + "DO NOT start the mokita daemon. You can query directly from the command line without starting the daemon!" + bcolors.ENDC)
+    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up an Merlin client node!")
+    print(bcolors.OKGREEN + "DO NOT start the merlin daemon. You can query directly from the command line without starting the daemon!" + bcolors.ENDC)
     quit()
 
 
@@ -294,34 +294,34 @@ def replayComplete():
 
 
 def replayDelay():
-    print(bcolors.OKGREEN + "Congratulations! Mokita is ready to replay from genesis on your command!")
+    print(bcolors.OKGREEN + "Congratulations! Merlin is ready to replay from genesis on your command!")
     print(bcolors.OKGREEN + "YOU MUST MANUALLY INCREASE ULIMIT FILE SIZE BEFORE STARTING WITH `ulimit -n 200000`")
     print(bcolors.OKGREEN + "Use the command `cosmovisor start` to start the replay from genesis process")
     print(bcolors.OKGREEN + "It is recommended to run this in a tmux session if not running as a background service")
-    print(bcolors.OKGREEN + "You must use `cosmovisor start` and not `mokitad start` in order to upgrade automatically"+ bcolors.ENDC)
+    print(bcolors.OKGREEN + "You must use `cosmovisor start` and not `merlind start` in order to upgrade automatically"+ bcolors.ENDC)
     quit()
 
 
-def localMokitaComplete():
-    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up a LocalMokita node!")
+def localMerlinComplete():
+    print(bcolors.OKGREEN + "Congratulations! You have successfully completed setting up a LocalMerlin node!")
     print(bcolors.OKGREEN + "To start the local network:")
     print(bcolors.OKGREEN + "Ensure docker is running in the background if on linux or start the Docker application if on Mac")
-    print(bcolors.OKGREEN + "Run 'cd $HOME/mokita'")
+    print(bcolors.OKGREEN + "Run 'cd $HOME/merlin'")
     print(bcolors.OKGREEN + "First, you MUST clean your env, run 'make localnet-clean' and select 'yes'")
     print(bcolors.OKGREEN + "To start the node, run 'make localnet-start'")
-    print(bcolors.OKGREEN + "Run 'mokitad status' to check that you are now creating blocks")
+    print(bcolors.OKGREEN + "Run 'merlind status' to check that you are now creating blocks")
     print(bcolors.OKGREEN + "To stop the node and retain data, run 'make localnet-stop'")
     print(bcolors.OKGREEN + "To stop the node and remove data, run 'make localnet-remove'")
-    print(bcolors.OKGREEN + "To run LocalMokita on a different version, git checkout the desired branch, run 'make localnet-build', then follow the above instructions")
-    print(bcolors.OKGREEN + "For more in depth information, see https://github.com/tessornetwork/mokita/blob/main/tests/localmokita/README.md"+ bcolors.ENDC)
+    print(bcolors.OKGREEN + "To run LocalMerlin on a different version, git checkout the desired branch, run 'make localnet-build', then follow the above instructions")
+    print(bcolors.OKGREEN + "For more in depth information, see https://github.com/tessornetwork/merlin/blob/main/tests/localmerlin/README.md"+ bcolors.ENDC)
     quit()
 
 
 def cosmovisorService ():
     print(bcolors.OKGREEN + "Creating Cosmovisor Service" + bcolors.ENDC)
     subprocess.run(["echo '# Setup Cosmovisor' >> "+HOME+"/.profile"], shell=True, env=my_env)
-    subprocess.run(["echo 'export DAEMON_NAME=mokitad' >> "+HOME+"/.profile"], shell=True, env=my_env)
-    subprocess.run(["echo 'export DAEMON_HOME="+moki_home+"' >> "+HOME+"/.profile"], shell=True, env=my_env)
+    subprocess.run(["echo 'export DAEMON_NAME=merlind' >> "+HOME+"/.profile"], shell=True, env=my_env)
+    subprocess.run(["echo 'export DAEMON_HOME="+mer_home+"' >> "+HOME+"/.profile"], shell=True, env=my_env)
     subprocess.run(["echo 'export DAEMON_ALLOW_DOWNLOAD_BINARIES=false' >> "+HOME+"/.profile"], shell=True, env=my_env)
     subprocess.run(["echo 'export DAEMON_LOG_BUFFER_SIZE=512' >> "+HOME+"/.profile"], shell=True, env=my_env)
     subprocess.run(["echo 'export DAEMON_RESTART_AFTER_UPGRADE=true' >> "+HOME+"/.profile"], shell=True, env=my_env)
@@ -330,14 +330,14 @@ def cosmovisorService ():
 Description=Cosmovisor daemon
 After=network-online.target
 [Service]
-Environment=\"DAEMON_NAME=mokitad\"
-Environment=\"DAEMON_HOME="""+ moki_home+"""\"
+Environment=\"DAEMON_NAME=merlind\"
+Environment=\"DAEMON_HOME="""+ mer_home+"""\"
 Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\"
 Environment=\"DAEMON_ALLOW_DOWNLOAD_BINARIES=false\"
 Environment=\"DAEMON_LOG_BUFFER_SIZE=512\"
 Environment=\"UNSAFE_SKIP_BACKUP=true\"
 User="""+ USER+"""
-ExecStart="""+HOME+"""/go/bin/cosmovisor start --home """+moki_home+"""
+ExecStart="""+HOME+"""/go/bin/cosmovisor start --home """+mer_home+"""
 Restart=always
 RestartSec=3
 LimitNOFILE=infinity
@@ -352,28 +352,28 @@ WantedBy=multi-user.target
     subprocess.run(["clear"], shell=True)
 
 
-def mokitadService ():
-    print(bcolors.OKGREEN + "Creating Mokitad Service..." + bcolors.ENDC)
+def merlindService ():
+    print(bcolors.OKGREEN + "Creating Merlind Service..." + bcolors.ENDC)
     subprocess.run(["""echo '[Unit]
-Description=Mokita Daemon
+Description=Merlin Daemon
 After=network-online.target
 [Service]
 User="""+ USER+"""
-ExecStart="""+HOME+"""/go/bin/mokitad start --home """+moki_home+"""
+ExecStart="""+HOME+"""/go/bin/merlind start --home """+mer_home+"""
 Restart=always
 RestartSec=3
 LimitNOFILE=infinity
 LimitNPROC=infinity
-Environment=\"DAEMON_HOME="""+moki_home+"""\"
-Environment=\"DAEMON_NAME=mokitad\"
+Environment=\"DAEMON_HOME="""+mer_home+"""\"
+Environment=\"DAEMON_NAME=merlind\"
 Environment=\"DAEMON_ALLOW_DOWNLOAD_BINARIES=false\"
 Environment=\"DAEMON_RESTART_AFTER_UPGRADE=true\"
 Environment=\"DAEMON_LOG_BUFFER_SIZE=512\"
 [Install]
 WantedBy=multi-user.target
-' >mokitad.service
+' >merlind.service
     """], shell=True, env=my_env)
-    subprocess.run(["sudo mv mokitad.service /lib/systemd/system/mokitad.service"], shell=True, env=my_env)
+    subprocess.run(["sudo mv merlind.service /lib/systemd/system/merlind.service"], shell=True, env=my_env)
     subprocess.run(["sudo systemctl daemon-reload"], shell=True, env=my_env)
     subprocess.run(["systemctl restart systemd-journald"], shell=True, env=my_env)
 
@@ -381,12 +381,12 @@ WantedBy=multi-user.target
 def cosmovisorInit ():
     print(bcolors.OKGREEN + """Do you want to use Cosmovisor to automate future upgrades?
 1) Yes, install cosmovisor and set up background service
-2) No, just set up an mokitad background service (recommended)
+2) No, just set up an merlind background service (recommended)
 3) Don't install cosmovisor and don't set up a background service
     """+ bcolors.ENDC)
     if args.cosmovisorService == "cosmoservice" :
         useCosmovisor = '1'
-    elif args.cosmovisorService == "mokiservice" :
+    elif args.cosmovisorService == "merservice" :
         useCosmovisor = '2'
     elif args.cosmovisorService == "noservice" :
         useCosmovisor = '3'
@@ -398,25 +398,25 @@ def cosmovisorInit ():
         print(bcolors.OKGREEN + "Setting Up Cosmovisor..." + bcolors.ENDC)
         os.chdir(os.path.expanduser(HOME))
         subprocess.run(["go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["mkdir -p "+moki_home+"/cosmovisor"], shell=True, env=my_env)
-        subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/genesis"], shell=True, env=my_env)
-        subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
-        subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades"], shell=True, env=my_env)
-        subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v9/bin"], shell=True, env=my_env)
-        os.chdir(os.path.expanduser(HOME+"/mokita"))
+        subprocess.run(["mkdir -p "+mer_home+"/cosmovisor"], shell=True, env=my_env)
+        subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/genesis"], shell=True, env=my_env)
+        subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
+        subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades"], shell=True, env=my_env)
+        subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v9/bin"], shell=True, env=my_env)
+        os.chdir(os.path.expanduser(HOME+"/merlin"))
         subprocess.run(["git checkout {v}".format(v=NetworkVersion.MAINNET)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["cp "+ GOPATH +"/bin/mokitad "+moki_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
+        subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["cp "+ GOPATH +"/bin/merlind "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
         cosmovisorService()
         subprocess.run(["sudo systemctl start cosmovisor"], shell=True, env=my_env)
         subprocess.run(["clear"], shell=True)
         completeCosmovisor()
     elif useCosmovisor == "2":
-        mokitadService()
-        subprocess.run(["sudo systemctl start mokitad"], shell=True, env=my_env)
+        merlindService()
+        subprocess.run(["sudo systemctl start merlind"], shell=True, env=my_env)
         subprocess.run(["clear"], shell=True)
-        completeMokitad()
+        completeMerlind()
     elif useCosmovisor == "3":
         subprocess.run(["clear"], shell=True)
         complete()
@@ -444,8 +444,8 @@ def startReplayNow():
         replayComplete()
     if startNow == "2":
         subprocess.run(["echo '# Setup Cosmovisor' >> "+HOME+"/.profile"], shell=True, env=my_env)
-        subprocess.run(["echo 'export DAEMON_NAME=mokitad' >> "+HOME+"/.profile"], shell=True, env=my_env)
-        subprocess.run(["echo 'export DAEMON_HOME="+moki_home+"' >> "+HOME+"/.profile"], shell=True, env=my_env)
+        subprocess.run(["echo 'export DAEMON_NAME=merlind' >> "+HOME+"/.profile"], shell=True, env=my_env)
+        subprocess.run(["echo 'export DAEMON_HOME="+mer_home+"' >> "+HOME+"/.profile"], shell=True, env=my_env)
         subprocess.run(["echo 'export DAEMON_ALLOW_DOWNLOAD_BINARIES=false' >> "+HOME+"/.profile"], shell=True, env=my_env)
         subprocess.run(["echo 'export DAEMON_LOG_BUFFER_SIZE=512' >> "+HOME+"/.profile"], shell=True, env=my_env)
         subprocess.run(["echo 'export DAEMON_RESTART_AFTER_UPGRADE=true' >> "+HOME+"/.profile"], shell=True, env=my_env)
@@ -461,49 +461,49 @@ def replayFromGenesisLevelDb ():
     print(bcolors.OKGREEN + "Setting Up Cosmovisor..." + bcolors.ENDC)
     os.chdir(os.path.expanduser(HOME))
     subprocess.run(["go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/genesis"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v4/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v5/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v7/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v9/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v11/bin"], shell=True, env=my_env)
-    os.chdir(os.path.expanduser(HOME+"/mokita"))
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/genesis"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v4/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v5/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v7/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v9/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v11/bin"], shell=True, env=my_env)
+    os.chdir(os.path.expanduser(HOME+"/merlin"))
     print(bcolors.OKGREEN + "Preparing v4 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v4.2.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v5/v6 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v6.4.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v7/v8 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v8.0.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v9/v10 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v10.0.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v11 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout {v}".format(v=NetworkVersion.MAINNET)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git checkout v3.1.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["make install"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp "+ GOPATH +"/bin/mokitad "+moki_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
+    subprocess.run(["cp "+ GOPATH +"/bin/merlind "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
     print(bcolors.OKGREEN + "Adding Persistent Peers For Replay..." + bcolors.ENDC)
     peers = "b5ace00790c9cc7990370d7a117ef2a29f19b961@65.109.20.216:26656,2dd86ed01eae5673df4452ce5b0dddb549f46a38@34.66.52.160:26656,2dd86ed01eae5673df4452ce5b0dddb549f46a38@34.82.89.95:26656"
-    subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+moki_home+"/config/config.toml"], shell=True)
+    subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
     subprocess.run(["clear"], shell=True)
     startReplayNow()
 
 
 def replayFromGenesisRocksDb ():
     print(bcolors.OKGREEN + "Changing db_backend to rocksdb..." + bcolors.ENDC)
-    subprocess.run(["sed -i -E 's/db_backend = \"goleveldb\"/db_backend = \"rocksdb\"/g' "+moki_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run(["sed -i -E 's/db_backend = \"goleveldb\"/db_backend = \"rocksdb\"/g' "+mer_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     print(bcolors.OKGREEN + "Installing rocksdb..." + bcolors.ENDC)
     print(bcolors.OKGREEN + "This process may take 15 minutes or more" + bcolors.ENDC)
     os.chdir(os.path.expanduser(HOME))
@@ -519,16 +519,16 @@ def replayFromGenesisRocksDb ():
     print(bcolors.OKGREEN + "Setting Up Cosmovisor..." + bcolors.ENDC)
     os.chdir(os.path.expanduser(HOME))
     subprocess.run(["go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/genesis"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v4/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v5/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v7/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v9/bin"], shell=True, env=my_env)
-    subprocess.run(["mkdir -p "+moki_home+"/cosmovisor/upgrades/v11/bin"], shell=True, env=my_env)
-    os.chdir(os.path.expanduser(HOME+"/mokita"))
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/genesis"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/genesis/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v4/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v5/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v7/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v9/bin"], shell=True, env=my_env)
+    subprocess.run(["mkdir -p "+mer_home+"/cosmovisor/upgrades/v11/bin"], shell=True, env=my_env)
+    os.chdir(os.path.expanduser(HOME+"/merlin"))
     print(bcolors.OKGREEN + "Preparing v4 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git stash"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git checkout v4.2.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
@@ -537,24 +537,24 @@ def replayFromGenesisRocksDb ():
     subprocess.run(["echo 'replace github.com/tecbot/gorocksdb => github.com/cosmos/gorocksdb v1.2.0' >> ./go.mod"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["go mod tidy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v4/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v5/v6 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git stash"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git checkout v6.4.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v5/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v7/v8 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v8.0.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v7/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v9/v10 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout v10.0.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v9/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Preparing v11 Upgrade..." + bcolors.ENDC)
     subprocess.run(["git checkout {v}".format(v=NetworkVersion.MAINNET)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/upgrades/v11/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git stash"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["git checkout v3.1.0"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["sed '/gorocksdb.*/d' ./go.mod"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
@@ -563,12 +563,12 @@ def replayFromGenesisRocksDb ():
     subprocess.run(["echo 'replace github.com/tecbot/gorocksdb => github.com/cosmos/gorocksdb v1.2.0' >> ./go.mod"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["go mod tidy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["cp build/mokitad "+moki_home+"/cosmovisor/genesis/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["cp build/merlind "+mer_home+"/cosmovisor/genesis/bin"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["BUILD_TAGS=rocksdb make install"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["sudo /sbin/ldconfig -v"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Adding Persistent Peers For Replay..." + bcolors.ENDC)
     peers = "b5ace00790c9cc7990370d7a117ef2a29f19b961@65.109.20.216:26656,2dd86ed01eae5673df4452ce5b0dddb549f46a38@34.66.52.160:26656,2dd86ed01eae5673df4452ce5b0dddb549f46a38@34.82.89.95:26656"
-    subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+moki_home+"/config/config.toml"], shell=True)
+    subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
     subprocess.run(["clear"], shell=True)
     startReplayNow()
 
@@ -642,16 +642,16 @@ Would you like to overwrite any previous swap file and instead set a """+str(swa
 
 # def stateSyncInit ():
 #     print(bcolors.OKGREEN + "Replacing trust height, trust hash, and RPCs in config.toml" + bcolors.ENDC)
-#     LATEST_HEIGHT= subprocess.run(["curl -s http://moki-sync.blockpane.com:26657/block | jq -r .result.block.header.height"], capture_output=True, shell=True, text=True, env=my_env)
+#     LATEST_HEIGHT= subprocess.run(["curl -s http://mer-sync.blockpane.com:26657/block | jq -r .result.block.header.height"], capture_output=True, shell=True, text=True, env=my_env)
 #     TRUST_HEIGHT= str(int(LATEST_HEIGHT.stdout.strip()) - 2000)
-#     TRUST_HASH= subprocess.run(["curl -s \"http://moki-sync.blockpane.com:26657/block?height="+str(TRUST_HEIGHT)+"\" | jq -r .result.block_id.hash"], capture_output=True, shell=True, text=True, env=my_env)
-#     RPCs = "moki-sync.blockpane.com:26657,moki-sync.blockpane.com:26657"
-#     subprocess.run(["sed -i -E 's/enable = false/enable = true/g' "+moki_home+"/config/config.toml"], shell=True)
-#     subprocess.run(["sed -i -E 's/rpc_servers = \"\"/rpc_servers = \""+RPCs+"\"/g' "+moki_home+"/config/config.toml"], shell=True)
-#     subprocess.run(["sed -i -E 's/trust_height = 0/trust_height = "+TRUST_HEIGHT+"/g' "+moki_home+"/config/config.toml"], shell=True)
-#     subprocess.run(["sed -i -E 's/trust_hash = \"\"/trust_hash = \""+TRUST_HASH.stdout.strip()+"\"/g' "+moki_home+"/config/config.toml"], shell=True)
+#     TRUST_HASH= subprocess.run(["curl -s \"http://mer-sync.blockpane.com:26657/block?height="+str(TRUST_HEIGHT)+"\" | jq -r .result.block_id.hash"], capture_output=True, shell=True, text=True, env=my_env)
+#     RPCs = "mer-sync.blockpane.com:26657,mer-sync.blockpane.com:26657"
+#     subprocess.run(["sed -i -E 's/enable = false/enable = true/g' "+mer_home+"/config/config.toml"], shell=True)
+#     subprocess.run(["sed -i -E 's/rpc_servers = \"\"/rpc_servers = \""+RPCs+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
+#     subprocess.run(["sed -i -E 's/trust_height = 0/trust_height = "+TRUST_HEIGHT+"/g' "+mer_home+"/config/config.toml"], shell=True)
+#     subprocess.run(["sed -i -E 's/trust_hash = \"\"/trust_hash = \""+TRUST_HASH.stdout.strip()+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
 #     print(bcolors.OKGREEN + """
-# Mokita is about to statesync. This process can take anywhere from 5-30 minutes.
+# Merlin is about to statesync. This process can take anywhere from 5-30 minutes.
 # During this process, you will see many logs (to include many errors)
 # As long as it continues to find/apply snapshot chunks, it is working.
 # If it stops finding/applying snapshot chunks, you may cancel and try a different method.
@@ -662,14 +662,14 @@ Would you like to overwrite any previous swap file and instead set a """+str(swa
 #     """+ bcolors.ENDC)
 #     stateSyncAns = input(bcolors.OKGREEN + 'Enter Choice: '+ bcolors.ENDC)
 #     if stateSyncAns == "1":
-#         subprocess.run(["mokitad start"], shell=True, env=my_env)
+#         subprocess.run(["merlind start"], shell=True, env=my_env)
 #         print(bcolors.OKGREEN + "Statesync finished. Installing required patches for state sync fix" + bcolors.ENDC)
 #         os.chdir(os.path.expanduser(HOME))
 #         subprocess.run(["git clone https://github.com/tendermint/tendermint"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
 #         os.chdir(os.path.expanduser(HOME+'/tendermint/'))
 #         subprocess.run(["git checkout callum/app-version"], shell=True, env=my_env)
 #         subprocess.run(["make install"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-#         subprocess.run(["tendermint set-app-version 1 --home "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+#         subprocess.run(["tendermint set-app-version 1 --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
 #         subprocess.run(["clear"], shell=True)
 #         if os_name == "Linux":
 #             cosmovisorInit()
@@ -687,10 +687,10 @@ Would you like to overwrite any previous swap file and instead set a """+str(swa
     #TRUST_HEIGHT= str(int(LATEST_HEIGHT.stdout.strip()) - 2000)
     #TRUST_HASH= subprocess.run(["curl -s \"http://143.198.139.33:26657/block?height="+str(TRUST_HEIGHT)+"\" | jq -r .result.block_id.hash"], capture_output=True, shell=True, text=True, env=my_env)
     #RPCs = "143.198.139.33:26657,143.198.139.33:26657"
-    #subprocess.run(["sed -i -E 's/enable = false/enable = true/g' "+moki_home+"/config/config.toml"], shell=True)
-    #subprocess.run(["sed -i -E 's/rpc_servers = \"\"/rpc_servers = \""+RPCs+"\"/g' "+moki_home+"/config/config.toml"], shell=True)
-    #subprocess.run(["sed -i -E 's/trust_height = 0/trust_height = "+TRUST_HEIGHT+"/g' "+moki_home+"/config/config.toml"], shell=True)
-    #subprocess.run(["sed -i -E 's/trust_hash = \"\"/trust_hash = \""+TRUST_HASH.stdout.strip()+"\"/g' "+moki_home+"/config/config.toml"], shell=True)
+    #subprocess.run(["sed -i -E 's/enable = false/enable = true/g' "+mer_home+"/config/config.toml"], shell=True)
+    #subprocess.run(["sed -i -E 's/rpc_servers = \"\"/rpc_servers = \""+RPCs+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
+    #subprocess.run(["sed -i -E 's/trust_height = 0/trust_height = "+TRUST_HEIGHT+"/g' "+mer_home+"/config/config.toml"], shell=True)
+    #subprocess.run(["sed -i -E 's/trust_hash = \"\"/trust_hash = \""+TRUST_HASH.stdout.strip()+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
     #if os_name == "Linux":
         #subprocess.run(["clear"], shell=True)
         #cosmovisorInit()
@@ -705,8 +705,8 @@ def infraSnapshotInstall ():
         subprocess.run(["brew install aria2"], shell=True, env=my_env)
         subprocess.run(["brew install lz4"], shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading Snapshot..." + bcolors.ENDC)
-    proc = subprocess.run(["curl https://mokita-snapshot.sfo3.cdn.digitaloceanspaces.com/mokita.json|jq -r '.[] |select(.file==\"mokita-1-pruned\")|.url'"], capture_output=True, shell=True, text=True)
-    os.chdir(os.path.expanduser(moki_home))
+    proc = subprocess.run(["curl https://merlin-snapshot.sfo3.cdn.digitaloceanspaces.com/merlin.json|jq -r '.[] |select(.file==\"merlin-1-pruned\")|.url'"], capture_output=True, shell=True, text=True)
+    os.chdir(os.path.expanduser(mer_home))
     subprocess.run(["wget -O - "+proc.stdout.strip()+" | lz4 -d | tar -xvf -"], shell=True, env=my_env)
     subprocess.run(["clear"], shell=True)
     if os_name == "Linux":
@@ -722,8 +722,8 @@ def snapshotInstall ():
         subprocess.run(["brew install aria2"], shell=True, env=my_env)
         subprocess.run(["brew install lz4"], shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading Snapshot..." + bcolors.ENDC)
-    proc = subprocess.run(["curl -L https://quicksync.io/mokita.json|jq -r '.[] |select(.file==\""+ fileName +"\")|select (.mirror==\""+ location +"\")|.url'"], capture_output=True, shell=True, text=True)
-    os.chdir(os.path.expanduser(moki_home))
+    proc = subprocess.run(["curl -L https://quicksync.io/merlin.json|jq -r '.[] |select(.file==\""+ fileName +"\")|select (.mirror==\""+ location +"\")|.url'"], capture_output=True, shell=True, text=True)
+    os.chdir(os.path.expanduser(mer_home))
     subprocess.run(["wget -O - "+proc.stdout.strip()+" | lz4 -d | tar -xvf -"], shell=True, env=my_env)
     subprocess.run(["clear"], shell=True)
     if os_name == "Linux":
@@ -781,12 +781,12 @@ def testNetType ():
 
     if nodeTypeAns == "1":
         subprocess.run(["clear"], shell=True)
-        fileName = "mokitestnet-4-pruned"
+        fileName = "mertestnet-4-pruned"
         location = "Netherlands"
         snapshotInstall()
     elif nodeTypeAns == "2":
         subprocess.run(["clear"], shell=True)
-        fileName = "mokitestnet-4-archive"
+        fileName = "mertestnet-4-archive"
         location = "Netherlands"
         snapshotInstall()
     else:
@@ -815,15 +815,15 @@ def mainNetType ():
 
     if nodeTypeAns == "1":
         subprocess.run(["clear"], shell=True)
-        fileName = "mokita-1-pruned"
+        fileName = "merlin-1-pruned"
         mainNetLocation()
     elif nodeTypeAns == "2":
         subprocess.run(["clear"], shell=True)
-        fileName = "mokita-1-default"
+        fileName = "merlin-1-default"
         mainNetLocation()
     elif nodeTypeAns == "3":
         subprocess.run(["clear"], shell=True)
-        fileName = "mokita-1-archive"
+        fileName = "merlin-1-archive"
         location = "Netherlands"
         snapshotInstall()
     else:
@@ -914,25 +914,25 @@ def pruningSettings ():
         dataSyncSelectionTest()
     elif pruneAns == "2" and networkType == NetworkType.MAINNET:
         subprocess.run(["clear"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"nothing\"/g' "+moki_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"nothing\"/g' "+mer_home+"/config/app.toml"], shell=True)
         dataSyncSelection()
     elif pruneAns == "2" and networkType == NetworkType.TESTNET:
         subprocess.run(["clear"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"nothing\"/g' "+moki_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"nothing\"/g' "+mer_home+"/config/app.toml"], shell=True)
         dataSyncSelectionTest()
     elif pruneAns == "3" and networkType == NetworkType.MAINNET:
         primeNum = random.choice([x for x in range(11, 97) if not [t for t in range(2, x) if not x % t]])
         subprocess.run(["clear"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"custom\"/g' "+moki_home+"/config/app.toml"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning-keep-recent = \"0\"/pruning-keep-recent = \"10000\"/g' "+moki_home+"/config/app.toml"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning-interval = \"0\"/pruning-interval = \""+str(primeNum)+"\"/g' "+moki_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"custom\"/g' "+mer_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning-keep-recent = \"0\"/pruning-keep-recent = \"10000\"/g' "+mer_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning-interval = \"0\"/pruning-interval = \""+str(primeNum)+"\"/g' "+mer_home+"/config/app.toml"], shell=True)
         dataSyncSelection()
     elif pruneAns == "3" and networkType == NetworkType.TESTNET:
         primeNum = random.choice([x for x in range(11, 97) if not [t for t in range(2, x) if not x % t]])
         subprocess.run(["clear"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"custom\"/g' "+moki_home+"/config/app.toml"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning-keep-recent = \"0\"/pruning-keep-recent = \"10000\"/g' "+moki_home+"/config/app.toml"], shell=True)
-        subprocess.run(["sed -i -E 's/pruning-interval = \"0\"/pruning-interval = \""+str(primeNum)+"\"/g' "+moki_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning = \"default\"/pruning = \"custom\"/g' "+mer_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning-keep-recent = \"0\"/pruning-keep-recent = \"10000\"/g' "+mer_home+"/config/app.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/pruning-interval = \"0\"/pruning-interval = \""+str(primeNum)+"\"/g' "+mer_home+"/config/app.toml"], shell=True)
         dataSyncSelectionTest()
     else:
         subprocess.run(["clear"], shell=True)
@@ -940,7 +940,7 @@ def pruningSettings ():
 
 
 def customPortSelection ():
-    print(bcolors.OKGREEN + """Do you want to run Mokita on default ports?:
+    print(bcolors.OKGREEN + """Do you want to run Merlin on default ports?:
 1) Yes, use default ports (recommended)
 2) No, specify custom ports
     """+ bcolors.ENDC)
@@ -983,95 +983,95 @@ def customPortSelection ():
             customPortSelection()
 
     #change app.toml values
-    subprocess.run(["sed -i -E 's|tcp://0.0.0.0:1317|"+api_server+"|g' "+moki_home+"/config/app.toml"], shell=True)
-    subprocess.run(["sed -i -E 's|0.0.0.0:9090|"+grpc_server+"|g' "+moki_home+"/config/app.toml"], shell=True)
-    subprocess.run(["sed -i -E 's|0.0.0.0:9091|"+grpc_web+"|g' "+moki_home+"/config/app.toml"], shell=True)
+    subprocess.run(["sed -i -E 's|tcp://0.0.0.0:1317|"+api_server+"|g' "+mer_home+"/config/app.toml"], shell=True)
+    subprocess.run(["sed -i -E 's|0.0.0.0:9090|"+grpc_server+"|g' "+mer_home+"/config/app.toml"], shell=True)
+    subprocess.run(["sed -i -E 's|0.0.0.0:9091|"+grpc_web+"|g' "+mer_home+"/config/app.toml"], shell=True)
 
     #change config.toml values
-    subprocess.run(["sed -i -E 's|tcp://127.0.0.1:26658|"+abci_app_addr+"|g' "+moki_home+"/config/config.toml"], shell=True)
-    subprocess.run(["sed -i -E 's|tcp://127.0.0.1:26657|"+rpc_laddr+"|g' "+moki_home+"/config/config.toml"], shell=True)
-    subprocess.run(["sed -i -E 's|tcp://0.0.0.0:26656|"+p2p_laddr+"|g' "+moki_home+"/config/config.toml"], shell=True)
-    subprocess.run(["sed -i -E 's|localhost:6060|"+pprof_laddr+"|g' "+moki_home+"/config/config.toml"], shell=True)
+    subprocess.run(["sed -i -E 's|tcp://127.0.0.1:26658|"+abci_app_addr+"|g' "+mer_home+"/config/config.toml"], shell=True)
+    subprocess.run(["sed -i -E 's|tcp://127.0.0.1:26657|"+rpc_laddr+"|g' "+mer_home+"/config/config.toml"], shell=True)
+    subprocess.run(["sed -i -E 's|tcp://0.0.0.0:26656|"+p2p_laddr+"|g' "+mer_home+"/config/config.toml"], shell=True)
+    subprocess.run(["sed -i -E 's|localhost:6060|"+pprof_laddr+"|g' "+mer_home+"/config/config.toml"], shell=True)
     subprocess.run(["clear"], shell=True)
 
     pruningSettings()
 
 def setupLocalnet ():
     global version
-    print(bcolors.OKGREEN + "Initializing LocalMokita " + nodeName + bcolors.ENDC)
-    os.chdir(os.path.expanduser(HOME+"/mokita"))
-    print(bcolors.OKGREEN + "Building LocalMokita docker image {v}...".format(v=version) + bcolors.ENDC)
+    print(bcolors.OKGREEN + "Initializing LocalMerlin " + nodeName + bcolors.ENDC)
+    os.chdir(os.path.expanduser(HOME+"/merlin"))
+    print(bcolors.OKGREEN + "Building LocalMerlin docker image {v}...".format(v=version) + bcolors.ENDC)
     subprocess.run(["make localnet-build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     subprocess.run(["clear"], shell=True)
-    localMokitaComplete()
+    localMerlinComplete()
 
 def setupMainnet ():
-    print(bcolors.OKGREEN + "Initializing Mokita Node " + nodeName + bcolors.ENDC)
-    #subprocess.run(["mokitad unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["rm "+moki_home+"/config/app.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["rm "+moki_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["rm "+moki_home+"/config/addrbook.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["mokitad init " + nodeName + " --chain-id=moki-1 -o --home "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL ,shell=True, env=my_env)
+    print(bcolors.OKGREEN + "Initializing Merlin Node " + nodeName + bcolors.ENDC)
+    #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["rm "+mer_home+"/config/app.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["rm "+mer_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["rm "+mer_home+"/config/addrbook.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["merlind init " + nodeName + " --chain-id=mer-1 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL ,shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading and Replacing Genesis..." + bcolors.ENDC)
-    subprocess.run(["wget -O "+moki_home+"/config/genesis.json https://github.com/osmosis-labs/networks/raw/main/mokita-1/genesis.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["wget -O "+mer_home+"/config/genesis.json https://github.com/osmosis-labs/networks/raw/main/merlin-1/genesis.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading and Replacing Addressbook..." + bcolors.ENDC)
-    subprocess.run(["wget -O "+moki_home+"/config/addrbook.json https://quicksync.io/addrbook.mokita.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["wget -O "+mer_home+"/config/addrbook.json https://quicksync.io/addrbook.merlin.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["clear"], shell=True)
     customPortSelection()
 
 
 def setupTestnet ():
-    print(bcolors.OKGREEN + "Initializing Mokita Node " + nodeName + bcolors.ENDC)
-    #subprocess.run(["mokitad unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["rm "+moki_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["rm "+moki_home+"/config/app.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["rm "+moki_home+"/config/addrbook.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-    subprocess.run(["mokitad init " + nodeName + " --chain-id=moki-test-4 -o --home "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    print(bcolors.OKGREEN + "Initializing Merlin Node " + nodeName + bcolors.ENDC)
+    #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["rm "+mer_home+"/config/config.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["rm "+mer_home+"/config/app.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["rm "+mer_home+"/config/addrbook.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["merlind init " + nodeName + " --chain-id=mer-test-4 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Downloading and Replacing Genesis..." + bcolors.ENDC)
-    subprocess.run(["wget -O "+moki_home+"/config/genesis.tar.bz2 wget https://github.com/osmosis-labs/networks/raw/main/moki-test-4/genesis.tar.bz2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["wget -O "+mer_home+"/config/genesis.tar.bz2 wget https://github.com/osmosis-labs/networks/raw/main/mer-test-4/genesis.tar.bz2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     print(bcolors.OKGREEN + "Finding and Replacing Seeds..." + bcolors.ENDC)
     peers = "4ab030b7fd75ed895c48bcc899b99c17a396736b@137.184.190.127:26656,3dbffa30baab16cc8597df02945dcee0aa0a4581@143.198.139.33:26656"
-    subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+moki_home+"/config/config.toml"], shell=True)
-    subprocess.run(["tar -xjf "+moki_home+"/config/genesis.tar.bz2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-    subprocess.run(["rm "+moki_home+"/config/genesis.tar.bz2"], shell=True)
-    subprocess.run(["sed -i -E 's/seeds = \"21d7539792ee2e0d650b199bf742c56ae0cf499e@162.55.132.230:2000,295b417f995073d09ff4c6c141bd138a7f7b5922@65.21.141.212:2000,ec4d3571bf709ab78df61716e47b5ac03d077a1a@65.108.43.26:2000,4cb8e1e089bdf44741b32638591944dc15b7cce3@65.108.73.18:2000,f515a8599b40f0e84dfad935ba414674ab11a668@mokita.blockpane.com:26656,6bcdbcfd5d2c6ba58460f10dbcfde58278212833@mokita.artifact-staking.io:26656\"/seeds = \"0f9a9c694c46bd28ad9ad6126e923993fc6c56b1@137.184.181.105:26656\"/g' "+moki_home+"/config/config.toml"], shell=True)
+    subprocess.run(["sed -i -E 's/persistent_peers = \"\"/persistent_peers = \""+peers+"\"/g' "+mer_home+"/config/config.toml"], shell=True)
+    subprocess.run(["tar -xjf "+mer_home+"/config/genesis.tar.bz2"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run(["rm "+mer_home+"/config/genesis.tar.bz2"], shell=True)
+    subprocess.run(["sed -i -E 's/seeds = \"21d7539792ee2e0d650b199bf742c56ae0cf499e@162.55.132.230:2000,295b417f995073d09ff4c6c141bd138a7f7b5922@65.21.141.212:2000,ec4d3571bf709ab78df61716e47b5ac03d077a1a@65.108.43.26:2000,4cb8e1e089bdf44741b32638591944dc15b7cce3@65.108.73.18:2000,f515a8599b40f0e84dfad935ba414674ab11a668@merlin.blockpane.com:26656,6bcdbcfd5d2c6ba58460f10dbcfde58278212833@merlin.artifact-staking.io:26656\"/seeds = \"0f9a9c694c46bd28ad9ad6126e923993fc6c56b1@137.184.181.105:26656\"/g' "+mer_home+"/config/config.toml"], shell=True)
     print(bcolors.OKGREEN + "Downloading and Replacing Addressbook..." + bcolors.ENDC)
-    subprocess.run(["wget -O "+moki_home+"/config/addrbook.json https://quicksync.io/addrbook.mokitestnet.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+    subprocess.run(["wget -O "+mer_home+"/config/addrbook.json https://quicksync.io/addrbook.mertestnet.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
     subprocess.run(["clear"], shell=True)
     customPortSelection()
 
 
 def clientSettings ():
     if networkType == NetworkType.MAINNET:
-        print(bcolors.OKGREEN + "Initializing Mokita Client Node " + nodeName + bcolors.ENDC)
-        #subprocess.run(["mokitad unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm "+moki_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["mokitad init " + nodeName + " --chain-id=mokita-1 -o --home "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        print(bcolors.OKGREEN + "Initializing Merlin Client Node " + nodeName + bcolors.ENDC)
+        #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm "+mer_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["merlind init " + nodeName + " --chain-id=merlin-1 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         print(bcolors.OKGREEN + "Changing Client Settings..." + bcolors.ENDC)
-        subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"mokita-1\"/g' "+moki_home+"/config/client.toml"], shell=True)
-        #subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"https://rpc-mokita.blockapsis.com:443\"|g' "+moki_home+"/config/client.toml"], shell=True)
-        subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"http://mokita.artifact-staking.io:26657\"|g' "+moki_home+"/config/client.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"merlin-1\"/g' "+mer_home+"/config/client.toml"], shell=True)
+        #subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"https://rpc-merlin.blockapsis.com:443\"|g' "+mer_home+"/config/client.toml"], shell=True)
+        subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"http://merlin.artifact-staking.io:26657\"|g' "+mer_home+"/config/client.toml"], shell=True)
         subprocess.run(["clear"], shell=True)
         clientComplete()
 
     elif networkType == NetworkType.TESTNET:
-        print(bcolors.OKGREEN + "Initializing Mokita Client Node " + nodeName + bcolors.ENDC)
-        #subprocess.run(["mokitad unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm "+moki_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["mokitad init " + nodeName + " --chain-id=moki-test-4 -o --home "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        print(bcolors.OKGREEN + "Initializing Merlin Client Node " + nodeName + bcolors.ENDC)
+        #subprocess.run(["merlind unsafe-reset-all"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm "+mer_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["merlind init " + nodeName + " --chain-id=mer-test-4 -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         print(bcolors.OKGREEN + "Changing Client Settings..." + bcolors.ENDC)
-        subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"moki-test-4\"/g' "+moki_home+"/config/client.toml"], shell=True)
-        subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"https://rpc.testnet.mokita.zone:443\"|g' "+moki_home+"/config/client.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"mer-test-4\"/g' "+mer_home+"/config/client.toml"], shell=True)
+        subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"https://rpc.testnet.merlin.zone:443\"|g' "+mer_home+"/config/client.toml"], shell=True)
         subprocess.run(["clear"], shell=True)
         clientComplete()
 
     elif networkType == NetworkType.LOCALOSMOSIS:
-        print(bcolors.OKGREEN + "Initializing LocalMokita Node " + nodeName + bcolors.ENDC)
-        subprocess.run(["rm "+moki_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["mokitad init " + nodeName + " --chain-id=localmokita -o --home "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        print(bcolors.OKGREEN + "Initializing LocalMerlin Node " + nodeName + bcolors.ENDC)
+        subprocess.run(["rm "+mer_home+"/config/client.toml"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["merlind init " + nodeName + " --chain-id=localmerlin -o --home "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         print(bcolors.OKGREEN + "Changing Client Settings..." + bcolors.ENDC)
-        subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"localmokita\"/g' "+moki_home+"/config/client.toml"], shell=True)
-        subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"tcp://127.0.0.1:26657\"|g' "+moki_home+"/config/client.toml"], shell=True)
+        subprocess.run(["sed -i -E 's/chain-id = \"\"/chain-id = \"localmerlin\"/g' "+mer_home+"/config/client.toml"], shell=True)
+        subprocess.run(["sed -i -E 's|node = \"tcp://localhost:26657\"|node = \"tcp://127.0.0.1:26657\"|g' "+mer_home+"/config/client.toml"], shell=True)
         subprocess.run(["clear"], shell=True)
         setupLocalnet()
 
@@ -1087,18 +1087,18 @@ def initNodeName ():
 
     if nodeName and networkType == NetworkType.MAINNET and node == NodeType.FULL:
         subprocess.run(["clear"], shell=True)
-        subprocess.run(["rm -r "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm -r "+HOME+"/.mokitad"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+HOME+"/.merlind"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         setupMainnet()
     elif nodeName and networkType == NetworkType.TESTNET and node == NodeType.FULL:
         subprocess.run(["clear"], shell=True)
-        subprocess.run(["rm -r "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm -r "+HOME+"/.mokitad"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+HOME+"/.merlind"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         setupTestnet()
     elif nodeName and node == NodeType.CLIENT or node == NodeType.LOCALOSMOSIS:
         subprocess.run(["clear"], shell=True)
-        subprocess.run(["rm -r "+moki_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
-        subprocess.run(["rm -r "+HOME+"/.mokitad"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+mer_home], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
+        subprocess.run(["rm -r "+HOME+"/.merlind"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True, env=my_env)
         clientSettings()
     else:
         subprocess.run(["clear"], shell=True)
@@ -1107,33 +1107,33 @@ def initNodeName ():
 
 
 def installLocationHandler ():
-    global moki_home
+    global mer_home
     print(bcolors.OKGREEN + "Input desired installation location. Press enter for default location" + bcolors.ENDC)
-    location_def = subprocess.run(["echo $HOME/.mokitad"], capture_output=True, shell=True, text=True).stdout.strip()
+    location_def = subprocess.run(["echo $HOME/.merlind"], capture_output=True, shell=True, text=True).stdout.strip()
 
     if args.installHome:
-        moki_home = args.installHome
+        mer_home = args.installHome
     else:
-        moki_home = rlinput(bcolors.OKGREEN +"Installation Location: "+ bcolors.ENDC, location_def)
+        mer_home = rlinput(bcolors.OKGREEN +"Installation Location: "+ bcolors.ENDC, location_def)
 
-    if moki_home.endswith("/"):
+    if mer_home.endswith("/"):
         print(bcolors.FAIL + "Please ensure your path does not end with `/`" + bcolors.FAIL)
         installLocationHandler()
-    elif not moki_home.startswith("/") and not moki_home.startswith("$"):
+    elif not mer_home.startswith("/") and not mer_home.startswith("$"):
         print(bcolors.FAIL + "Please ensure your path begin with a `/`" + bcolors.FAIL)
         installLocationHandler()
-    elif moki_home == "":
+    elif mer_home == "":
         print(bcolors.FAIL + "Please ensure your path is not blank" + bcolors.FAIL)
         installLocationHandler()
     else:
-        moki_home = subprocess.run(["echo "+moki_home], capture_output=True, shell=True, text=True).stdout.strip()
+        mer_home = subprocess.run(["echo "+mer_home], capture_output=True, shell=True, text=True).stdout.strip()
         subprocess.run(["clear"], shell=True)
         initNodeName()
 
 
 def installLocation ():
-    global moki_home
-    print(bcolors.OKGREEN + """Do you want to install Mokita in the default location?:
+    global mer_home
+    print(bcolors.OKGREEN + """Do you want to install Merlin in the default location?:
 1) Yes, use default location (recommended)
 2) No, specify custom location
     """+ bcolors.ENDC)
@@ -1145,7 +1145,7 @@ def installLocation ():
 
     if locationChoice == "1":
         subprocess.run(["clear"], shell=True)
-        moki_home = subprocess.run(["echo $HOME/.mokitad"], capture_output=True, shell=True, text=True).stdout.strip()
+        mer_home = subprocess.run(["echo $HOME/.merlind"], capture_output=True, shell=True, text=True).stdout.strip()
         initNodeName()
     elif locationChoice == "2":
         subprocess.run(["clear"], shell=True)
@@ -1225,11 +1225,11 @@ def initSetup ():
             print(bcolors.OKGREEN + repo +""" repo provided by user does not exist, try another URL
             """+ bcolors.ENDC)
             brachSelection()
-        os.chdir(os.path.expanduser(HOME+"/mokita"))
+        os.chdir(os.path.expanduser(HOME+"/merlin"))
         subprocess.run(["git stash"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
         subprocess.run(["git pull"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
-        print(bcolors.OKGREEN + "(4/4) Installing Mokita {v} Binary...".format(v=version) + bcolors.ENDC)
+        print(bcolors.OKGREEN + "(4/4) Installing Merlin {v} Binary...".format(v=version) + bcolors.ENDC)
         gitCheckout = subprocess.Popen(["git checkout {v}".format(v=version)], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, shell=True)
         if "did not match any file(s) known to git" in gitCheckout.communicate()[1]:
             subprocess.run(["clear"], shell=True)
@@ -1280,11 +1280,11 @@ def initSetup ():
             print(bcolors.OKGREEN + repo +""" repo provided by user does not exist, try another URL
             """+ bcolors.ENDC)
             brachSelection()
-        os.chdir(os.path.expanduser(HOME+"/mokita"))
+        os.chdir(os.path.expanduser(HOME+"/merlin"))
         subprocess.run(["git stash"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
         subprocess.run(["git pull"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
-        print(bcolors.OKGREEN + "(4/4) Installing Mokita {v} Binary...".format(v=version) + bcolors.ENDC)
+        print(bcolors.OKGREEN + "(4/4) Installing Merlin {v} Binary...".format(v=version) + bcolors.ENDC)
         gitCheckout = subprocess.Popen(["git checkout {v}".format(v=version)], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, shell=True)
         if "did not match any file(s) known to git" in gitCheckout.communicate()[1]:
             subprocess.run(["clear"], shell=True)
@@ -1352,13 +1352,13 @@ def repoHandler ():
 def brachSelection ():
     global version
     global repo
-    repo = "https://github.com/tessornetwork/mokita"
+    repo = "https://github.com/tessornetwork/merlin"
     version = NetworkVersion.LOCALOSMOSIS.value
     print(bcolors.OKGREEN +"""
-Would you like to run LocalMokita on the most recent release of Mokita: {v} ?
+Would you like to run LocalMerlin on the most recent release of Merlin: {v} ?
 1) Yes, use {v} (recommended)
-2) No, I want to use a different version of Mokita for LocalMokita from a branch on the mokita repo
-3) No, I want to use a different version of Mokita for LocalMokita from a branch on an external repo
+2) No, I want to use a different version of Merlin for LocalMerlin from a branch on the merlin repo
+3) No, I want to use a different version of Merlin for LocalMerlin from a branch on an external repo
     """.format(
             v=version) + bcolors.ENDC)
 
@@ -1381,7 +1381,7 @@ Would you like to run LocalMokita on the most recent release of Mokita: {v} ?
 def initEnvironment():
     global repo
     global version
-    repo = "https://github.com/tessornetwork/mokita"
+    repo = "https://github.com/tessornetwork/merlin"
     if networkType == NetworkType.MAINNET:
         version = NetworkVersion.MAINNET.value
     if networkType == NetworkType.TESTNET:
@@ -1476,13 +1476,13 @@ def selectNetwork ():
     print(bcolors.OKGREEN +
     """
 Please choose a network to join:
-1) Mainnet (mokita-1)
-2) Testnet (moki-test-4)
+1) Mainnet (merlin-1)
+2) Testnet (mer-test-4)
     """ + bcolors.ENDC)
 
-    if args.network == "mokita-1":
+    if args.network == "merlin-1":
         networkType = NetworkType.MAINNET
-    elif args.network == "moki-test-4":
+    elif args.network == "mer-test-4":
         networkType = NetworkType.TESTNET
     else:
         networkType = input(bcolors.OKGREEN + 'Enter Choice: '+ bcolors.ENDC)
@@ -1531,20 +1531,20 @@ def start ():
  ╚═════╝ ╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝╚══════╝
 
 
-Welcome to the Mokita node installer!
+Welcome to the Merlin node installer!
 
 Mainnet version: {m}
 Testnet version: {t}
 
-For more information, please visit docs.mokita.zone
-Ensure no mokita services are running in the background
-If running over an old mokita installation, back up
-any important mokita data before proceeding
+For more information, please visit docs.merlin.zone
+Ensure no merlin services are running in the background
+If running over an old merlin installation, back up
+any important merlin data before proceeding
 
 Please choose a node type:
 1) Full Node (download chain data and run locally)
 2) Client Node (setup a daemon and query a public RPC)
-3) LocalMokita Node (setup a daemon and query a localMokita development RPC)
+3) LocalMerlin Node (setup a daemon and query a localMerlin development RPC)
         """.format(
             m=NetworkVersion.MAINNET.value,
             t=NetworkVersion.TESTNET.value) + bcolors.ENDC)
